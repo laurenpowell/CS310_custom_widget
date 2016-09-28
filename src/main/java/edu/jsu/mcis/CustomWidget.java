@@ -12,15 +12,17 @@ public class CustomWidget extends JPanel implements MouseListener {
     private final Color SELECTED_COLOR = Color.blue;
     private final Color DEFAULT_COLOR = Color.yellow;
     private boolean selected;
-    private Point[] vertex;
-
+    private Point[] vertexHexagon;
+	private Point[] vertexOctagon;
+	
     
     public CustomWidget() {
         observers = new ArrayList<>();
-        
         selected = false;
-        vertex = new Point[4];
-        for(int i = 0; i < vertex.length; i++) { vertex[i] = new Point(); }
+        vertexHexagon = new Point[6];
+		vertexOctagon = new Point[8];
+        for(int i = 0; i < vertexHexagon.length; i++) { vertexHexagon[i] = new Point(); }
+		for(int i = 0; i < vertexOctagon.length; i++) { vertexOctagon[i] = new Point(); }
         Dimension dim = getPreferredSize();
         calculateVertices(dim.width, dim.height);
         setBorder(BorderFactory.createLineBorder(Color.black));
@@ -35,7 +37,7 @@ public class CustomWidget extends JPanel implements MouseListener {
         observers.remove(observer);
     }
     private void notifyObservers() {
-        ShapeEvent event = new ShapeEvent(selected);
+        ShapeEvent event = new ShapeEvent(selected, selected);
         for(ShapeObserver obs : observers) {
             obs.shapeChanged(event);
         }
@@ -48,56 +50,86 @@ public class CustomWidget extends JPanel implements MouseListener {
     }
 
     private void calculateVertices(int width, int height) {
-        // Square size should be half of the smallest dimension (width or height).
-        int side = Math.min(width, height) / 2;
-        Point[] sign = {new Point(-1, -1), new Point(1, -1), new Point(1, 1), new Point(-1, 1)};
-        for(int i = 0; i < vertex.length; i++) {
-            vertex[i].setLocation(width/2 + sign[i].x * side/2, 
-                                  height/2 + sign[i].y * side/2);
-        }
-    }
+		int side = Math.min(width, height) / 4;
+        Point[] sign = new Point[6];
+	    for (int i = 0; i < vertexHexagon.length; i++){
+		   double radius = (i * (Math.PI / (vertexHexagon.length / 2)));
+           vertexHexagon[i].setLocation(width/3 + (Math.cos(radius)* (side/2)), height/2 + (Math.sin(radius) * (side/2)));
+		}
+		for (int i = 0; i < vertexOctagon.length; i++){
+		   double radius = (i *(Math.PI / (vertexOctagon.length / 2))) + (Math.PI * 0.125);
+           vertexOctagon[i].setLocation((width - width/3) + (Math.cos(radius)* (side/2)), height/2 + (Math.sin(radius) * (side/2)));
+		}
+		
+	}
     
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D)g;
         calculateVertices(getWidth(), getHeight());
-        Shape shape = getShape();
+		
+        Shape[] shape = getShapes();
+		
         g2d.setColor(Color.black);
-        g2d.draw(shape);
+        g2d.draw(shape[0]);
+		g2d.draw(shape[1]);
+		
         if(selected) {
             g2d.setColor(SELECTED_COLOR);
-            g2d.fill(shape);
+            g2d.fill(shape[0]);
+			g2d.fill(shape[1]);
         }
         else {
             g2d.setColor(DEFAULT_COLOR);
-            g2d.fill(shape);            
+            g2d.fill(shape[0]);
+			g2d.fill(shape[1]);           
         }
     }
 
     public void mouseClicked(MouseEvent event) {
-        Shape shape = getShape();
-        if(shape.contains(event.getX(), event.getY())) {
+        Shape[] shape = getShapes();
+        if(shape[0].contains(event.getX(), event.getY())) {
             selected = !selected;
             notifyObservers();
         }
-        repaint(shape.getBounds());
+        repaint(shape[0].getBounds());
+		
+		
+        if(shape[1].contains(event.getX(), event.getY())) {
+            selected = !selected;
+            notifyObservers();
+        }
+        repaint(shape[1].getBounds());
     }
     public void mousePressed(MouseEvent event) {}
     public void mouseReleased(MouseEvent event) {}
     public void mouseEntered(MouseEvent event) {}
     public void mouseExited(MouseEvent event) {}
     
-    public Shape getShape() {
-        int[] x = new int[vertex.length];
-        int[] y = new int[vertex.length];
-        for(int i = 0; i < vertex.length; i++) {
-            x[i] = vertex[i].x;
-            y[i] = vertex[i].y;
+    public Shape[] getShapes() {
+		Shape[] shape = new Shape[2];
+        int[] x = new int[vertexHexagon.length];
+        int[] y = new int[vertexHexagon.length];
+        for(int i = 0; i < vertexHexagon.length; i++) {
+            x[i] = vertexHexagon[i].x;
+            y[i] = vertexHexagon[i].y;
+		}
+		shape[0] = new Polygon(x, y, vertexHexagon.length);
+		
+		x = new int[vertexOctagon.length];
+        y = new int[vertexOctagon.length];
+        for(int i = 0; i < vertexOctagon.length; i++) {
+            x[i] = vertexOctagon[i].x;
+            y[i] = vertexOctagon[i].y;
         }
-        Shape shape = new Polygon(x, y, vertex.length);
+		
+        
+		shape[1] = new Polygon(x, y, vertexOctagon.length);
+		
         return shape;
     }
+	
     public boolean isSelected() { return selected; }
 
 
