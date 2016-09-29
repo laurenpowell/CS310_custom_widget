@@ -8,27 +8,27 @@ import java.util.*;
 public class CustomWidget extends JPanel implements MouseListener {
     private java.util.List<ShapeObserver> observers;
     private final Color HEXAGON_COLOR = Color.green;
-	private final Color OCTAGON_COLOR = Color.red;
+    private final Color OCTAGON_COLOR = Color.red;
     private final Color DEFAULT_COLOR = Color.white;
-	boolean selected;
+    boolean selected;
     boolean selectedHexagon;
-	boolean selectedOctagon;
+    boolean selectedOctagon;
     private Point[] vertexHexagon;
-	private Point[] vertexOctagon;
-	
+    private Point[] vertexOctagon;
+
     
     public CustomWidget() {
         observers = new ArrayList<>();
         boolean selectedHexagon = false;
-		boolean selectedOctagon = false;
+        boolean selectedOctagon = false;
         vertexHexagon = new Point[6];
-		vertexOctagon = new Point[8];
+        vertexOctagon = new Point[8];
         for(int i = 0; i < vertexHexagon.length; i++) { vertexHexagon[i] = new Point(); }
-		for(int i = 0; i < vertexOctagon.length; i++) { vertexOctagon[i] = new Point(); }
+        for(int i = 0; i < vertexOctagon.length; i++) { vertexOctagon[i] = new Point(); }
         Dimension dim = getPreferredSize();
         calculateVertices(dim.width, dim.height);
         setBorder(BorderFactory.createLineBorder(Color.black));
-		setBackground( Color.BLACK );
+        setBackground( Color.BLACK );
         addMouseListener(this);
     }
 
@@ -53,60 +53,56 @@ public class CustomWidget extends JPanel implements MouseListener {
     }
 
     private void calculateVertices(int width, int height) {
-		int side = Math.min(width, height) / 4;
+        int side = Math.min(width, height) / 4;
         Point[] sign = new Point[6];
-	    for (int i = 0; i < vertexHexagon.length; i++){
-		   double radius = (i * (Math.PI / (vertexHexagon.length / 2)));
-           vertexHexagon[i].setLocation(width/3 + (Math.cos(radius)* (side/2)), height/2 + (Math.sin(radius) * (side/2)));
-		}
-		for (int i = 0; i < vertexOctagon.length; i++){
-		   double radius = (i *(Math.PI / (vertexOctagon.length / 2))) + (Math.PI * 0.125);
-           vertexOctagon[i].setLocation((width - width/3) + (Math.cos(radius)* (side/2)), height/2 + (Math.sin(radius) * (side/2)));
-		}
-		
-	}
+        for (int i = 0; i < vertexHexagon.length; i++){
+            double radius = (i * (Math.PI / (vertexHexagon.length / 2)));
+            vertexHexagon[i].setLocation(width/3 + (Math.cos(radius)* (side/2)), height/2 + (Math.sin(radius) * (side/2)));
+        }
+        for (int i = 0; i < vertexOctagon.length; i++){
+            double radius = (i *(Math.PI / (vertexOctagon.length / 2))) + (Math.PI * 0.125);
+            vertexOctagon[i].setLocation((width - width/3) + (Math.cos(radius)* (side/2)), height/2 + (Math.sin(radius) * (side/2)));
+        }
+    }
     
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D)g;
         calculateVertices(getWidth(), getHeight());
-		
         Shape[] shape = getShapes();
-		
         g2d.setColor(Color.black);
         g2d.draw(shape[0]);
-		g2d.draw(shape[1]);
-		
-		if(selectedHexagon) {
+        g2d.draw(shape[1]);
+
+        if(selectedHexagon) {
             g2d.setColor(HEXAGON_COLOR);
             g2d.fill(shape[0]);
-			g2d.setColor(DEFAULT_COLOR);
-			g2d.fill(shape[1]);
-		}
-        if(selectedOctagon){
-			g2d.setColor(OCTAGON_COLOR);
+            g2d.setColor(DEFAULT_COLOR);
             g2d.fill(shape[1]);
-			g2d.setColor(DEFAULT_COLOR);
-			g2d.fill(shape[0]);
-		}
-		if(!selectedHexagon && !selectedOctagon) {
+        }
+        if(selectedOctagon){
+            g2d.setColor(OCTAGON_COLOR);
+            g2d.fill(shape[1]);
             g2d.setColor(DEFAULT_COLOR);
             g2d.fill(shape[0]);
-			g2d.setColor(DEFAULT_COLOR);
-			g2d.fill(shape[1]);           
+        }
+        if(!selectedHexagon && !selectedOctagon) {
+            g2d.setColor(DEFAULT_COLOR);
+            g2d.fill(shape[0]);
+            g2d.setColor(DEFAULT_COLOR);
+            g2d.fill(shape[1]);           
         }
     }
 
     public void mouseClicked(MouseEvent event) {
         Shape[] shape = getShapes();
         if(shape[0].contains(event.getX(), event.getY())) {
-			selectedHexagon = !selectedHexagon;
-			notifyObservers();
+            selectedHexagon = !selectedHexagon;
+            notifyObservers();
         }
         repaint(shape[0].getBounds());
-		
-		
+
         if(shape[1].contains(event.getX(), event.getY())) {
             selectedOctagon = !selectedOctagon;
             notifyObservers();
@@ -119,36 +115,36 @@ public class CustomWidget extends JPanel implements MouseListener {
     public void mouseExited(MouseEvent event) {}
     
     public Shape[] getShapes() {
-		Shape[] shape = new Shape[2];
+        Shape[] shape = new Shape[2];
         int[] x = new int[vertexHexagon.length];
         int[] y = new int[vertexHexagon.length];
         for(int i = 0; i < vertexHexagon.length; i++) {
             x[i] = vertexHexagon[i].x;
             y[i] = vertexHexagon[i].y;
-		}
-		shape[0] = new Polygon(x, y, vertexHexagon.length);
-		
-		x = new int[vertexOctagon.length];
+        }
+        shape[0] = new Polygon(x, y, vertexHexagon.length);
+
+        x = new int[vertexOctagon.length];
         y = new int[vertexOctagon.length];
         for(int i = 0; i < vertexOctagon.length; i++) {
             x[i] = vertexOctagon[i].x;
             y[i] = vertexOctagon[i].y;
         }
-		shape[1] = new Polygon(x, y, vertexOctagon.length);
-		
+        shape[1] = new Polygon(x, y, vertexOctagon.length);
+
         return shape;
     }
-	
-	public boolean hexagonSelected(){ return selectedHexagon; }
-	public boolean octagonSelected(){ return selectedOctagon; }
+
+    public boolean hexagonSelected(){ return selectedHexagon; }
+    public boolean octagonSelected(){ return selectedOctagon; }
     public boolean isSelected() { return hexagonSelected() || octagonSelected(); }
     
 
-	public static void main(String[] args) {
-		JFrame window = new JFrame("Custom Widget");
+    public static void main(String[] args) {
+        JFrame window = new JFrame("Custom Widget");
         window.add(new CustomWidget());
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setSize(300, 300);
         window.setVisible(true);
-	}
+    }
 }

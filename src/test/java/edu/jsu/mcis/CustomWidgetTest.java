@@ -10,24 +10,24 @@ public class CustomWidgetTest {
     private CustomWidget widget;
     
     private Point getCenterOfHexagon() {
-		Rectangle boundsHexagon = widget.getShapes()[0].getBounds();
-		return new Point(boundsHexagon.x + boundsHexagon.width/2, boundsHexagon.y + boundsHexagon.height/2);
+        Rectangle boundsHexagon = widget.getShapes()[0].getBounds();
+        return new Point(boundsHexagon.x + boundsHexagon.width/2, boundsHexagon.y + boundsHexagon.height/2);
     }
-	private Point getCenterOfOctagon(){
-		Rectangle boundsOctagon = widget.getShapes()[1].getBounds();
-		return new Point(boundsOctagon.x + boundsOctagon.width/2, boundsOctagon.y + boundsOctagon.height/2);
-	}
+    private Point getCenterOfOctagon(){
+        Rectangle boundsOctagon = widget.getShapes()[1].getBounds();
+        return new Point(boundsOctagon.x + boundsOctagon.width/2, boundsOctagon.y + boundsOctagon.height/2);
+    }
     
     @Before
     public void setUp() {
         widget = new CustomWidget();
     }
     
-	@Test
-	public void testWidgetIsInitiallyDeselected() {
-		assertFalse(widget.hexagonSelected());
-		assertFalse(widget.octagonSelected());
-	}
+    @Test
+    public void testWidgetIsInitiallyDeselected() {
+        assertFalse(widget.hexagonSelected());
+        assertFalse(widget.octagonSelected());
+    }
     
     @Test
     public void testClickingCenterOfHexagonSelectsIt() {
@@ -38,14 +38,14 @@ public class CustomWidgetTest {
         widget.mouseClicked(event);
         assertTrue(widget.hexagonSelected());
     }
-	
-	@Test
+    
+    @Test
     public void testClickingCenterOfWidgetSelectsIt() {
         Point center = getCenterOfOctagon();
         MouseEvent event = new MouseEvent(widget, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 
                                           0, center.x, center.y, 1, false);
         
         widget.mouseClicked(event);
-		assertTrue(widget.octagonSelected());
-	}
+        assertTrue(widget.octagonSelected());
+    }
 }
