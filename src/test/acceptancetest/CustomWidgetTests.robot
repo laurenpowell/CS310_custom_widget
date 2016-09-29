@@ -14,25 +14,41 @@ Widget Is Not Selected Initially
     Label Text Should Be    label   NOT SELECTED
     Close Window            Main
 
-Widget Is Selected After Center Click
+HEXAGON Is Selected After Center Click
     Start Application       edu.jsu.mcis.Main
     Select Window           Main
-    Click Custom Widget Inside
-    Label Text Should Be    label   SELECTED
+    Click Hexagon
+    Label Text Should Be    label   HEXAGON
+    Close Window            Main
+
+OCTAGON Is Selected After Center Click
+    Start Application       edu.jsu.mcis.Main
+    Select Window           Main
+    Click OCTAGON
+    Label Text Should Be    label   OCTAGON
     Close Window            Main
     
 Widget Is Unchanged After Edge Click
     Start Application       edu.jsu.mcis.Main
     Select Window           Main
-    Click Custom Widget Outside
+    Click Outside
     Label Text Should Be    label   NOT SELECTED
     Close Window            Main
 
-Widget Toggles With Successive Center Clicks
+Widget Toggles With Successive Center Clicks Hexagon
     Start Application       edu.jsu.mcis.Main
     Select Window           Main
-    Click Custom Widget Inside
-    Label Text Should Be    label   SELECTED
-    Click Custom Widget Inside
+    Click Hexagon
+    Label Text Should Be    label   HEXAGON
+    Click Hexagon
+    Label Text Should Be    label   NOT SELECTED
+    Close Window            Main
+
+Widget Toggles With Successive Center Clicks Octagon
+    Start Application       edu.jsu.mcis.Main
+    Select Window           Main
+    Click Octagon
+    Label Text Should Be    label   OCTAGON
+    Click Octagon
     Label Text Should Be    label   NOT SELECTED
     Close Window            Main

@@ -7,18 +7,20 @@ import java.util.*;
 
 public class CustomWidget extends JPanel implements MouseListener {
     private java.util.List<ShapeObserver> observers;
-    
-    
-    private final Color SELECTED_COLOR = Color.blue;
-    private final Color DEFAULT_COLOR = Color.yellow;
-    private boolean selected;
+    private final Color HEXAGON_COLOR = Color.green;
+	private final Color OCTAGON_COLOR = Color.red;
+    private final Color DEFAULT_COLOR = Color.white;
+	boolean selected;
+    boolean selectedHexagon;
+	boolean selectedOctagon;
     private Point[] vertexHexagon;
 	private Point[] vertexOctagon;
 	
     
     public CustomWidget() {
         observers = new ArrayList<>();
-        selected = false;
+        boolean selectedHexagon = false;
+		boolean selectedOctagon = false;
         vertexHexagon = new Point[6];
 		vertexOctagon = new Point[8];
         for(int i = 0; i < vertexHexagon.length; i++) { vertexHexagon[i] = new Point(); }
@@ -26,6 +28,7 @@ public class CustomWidget extends JPanel implements MouseListener {
         Dimension dim = getPreferredSize();
         calculateVertices(dim.width, dim.height);
         setBorder(BorderFactory.createLineBorder(Color.black));
+		setBackground( Color.BLACK );
         addMouseListener(this);
     }
 
@@ -37,7 +40,7 @@ public class CustomWidget extends JPanel implements MouseListener {
         observers.remove(observer);
     }
     private void notifyObservers() {
-        ShapeEvent event = new ShapeEvent(selected, selected);
+        ShapeEvent event = new ShapeEvent(selectedHexagon, selectedOctagon);
         for(ShapeObserver obs : observers) {
             obs.shapeChanged(event);
         }
@@ -75,14 +78,22 @@ public class CustomWidget extends JPanel implements MouseListener {
         g2d.draw(shape[0]);
 		g2d.draw(shape[1]);
 		
-        if(selected) {
-            g2d.setColor(SELECTED_COLOR);
+		if(selectedHexagon) {
+            g2d.setColor(HEXAGON_COLOR);
             g2d.fill(shape[0]);
+			g2d.setColor(DEFAULT_COLOR);
 			g2d.fill(shape[1]);
-        }
-        else {
+		}
+        if(selectedOctagon){
+			g2d.setColor(OCTAGON_COLOR);
+            g2d.fill(shape[1]);
+			g2d.setColor(DEFAULT_COLOR);
+			g2d.fill(shape[0]);
+		}
+		if(!selectedHexagon && !selectedOctagon) {
             g2d.setColor(DEFAULT_COLOR);
             g2d.fill(shape[0]);
+			g2d.setColor(DEFAULT_COLOR);
 			g2d.fill(shape[1]);           
         }
     }
@@ -90,14 +101,14 @@ public class CustomWidget extends JPanel implements MouseListener {
     public void mouseClicked(MouseEvent event) {
         Shape[] shape = getShapes();
         if(shape[0].contains(event.getX(), event.getY())) {
-            selected = !selected;
-            notifyObservers();
+			selectedHexagon = !selectedHexagon;
+			notifyObservers();
         }
         repaint(shape[0].getBounds());
 		
 		
         if(shape[1].contains(event.getX(), event.getY())) {
-            selected = !selected;
+            selectedOctagon = !selectedOctagon;
             notifyObservers();
         }
         repaint(shape[1].getBounds());
@@ -123,16 +134,15 @@ public class CustomWidget extends JPanel implements MouseListener {
             x[i] = vertexOctagon[i].x;
             y[i] = vertexOctagon[i].y;
         }
-		
-        
 		shape[1] = new Polygon(x, y, vertexOctagon.length);
 		
         return shape;
     }
 	
-    public boolean isSelected() { return selected; }
-
-
+	public boolean hexagonSelected(){ return selectedHexagon; }
+	public boolean octagonSelected(){ return selectedOctagon; }
+    public boolean isSelected() { return hexagonSelected() || octagonSelected(); }
+    
 
 	public static void main(String[] args) {
 		JFrame window = new JFrame("Custom Widget");

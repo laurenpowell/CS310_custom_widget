@@ -13,22 +13,26 @@ public class Main extends JPanel implements ShapeObserver {
         widget.addShapeObserver(this);
         label = new JLabel("NOT SELECTED", JLabel.CENTER);
         label.setName("label");
-        setLayout(new BorderLayout());
+		setLayout(new BorderLayout());
         add(widget, BorderLayout.CENTER);
         add(label, BorderLayout.NORTH);
     }
     
     public void shapeChanged(ShapeEvent event) {
-        if(event.isSelected()) { label.setText("SELECTED"); }
-        else { label.setText("NOT SELECTED"); }
+        if(event.isHexagon()) { 
+			label.setText("HEXAGON"); 
+		}else if(event.isOctagon()){
+			label.setText("OCTAGON");
+		}else{ 
+			label.setText("NOT SELECTED"); 
+		}
     }
-
 
 	public static void main(String[] args) {
 		JFrame window = new JFrame();
         window.setTitle("Main");
         window.add(new Main());
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setSize(500, 500);
         window.setVisible(true);
 	}
